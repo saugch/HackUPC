@@ -98,4 +98,18 @@ def ask_me(originplace, destinationplacelist, inoutbounddatelist, budget, delta,
     return hlist
 
 #print(ask_hotelscanner('bcn','2016-10-20','2016-10-21',1000))
-print(ask_me('bcn-sky', ['stn-sky','edi-sky','mad-sky'], llistadates, 1000, 4, (0,0)))
+
+from datetime import timedelta
+
+def generate_dates_list(total_initial_date, total_final_date, delta):
+  list_dates = []
+  initial_date = total_initial_date
+  final_date = initial_date + timedelta(days=delta)
+  list_dates.append((str(initial_date), str(final_date)))
+  
+  while final_date < total_final_date:
+      initial_date += timedelta(days = 1)
+      final_date = initial_date + timedelta(days=delta)
+      list_dates.append((str(initial_date), str(final_date)))
+      
+  return list_dates
