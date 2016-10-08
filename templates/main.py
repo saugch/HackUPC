@@ -8,7 +8,7 @@ def index():
 @app.route('/result', methods=['POST'])
 def calculate_result():
     
-    from_city = request.form['from_city'].encode('ascii','ignore')
+    from_city = request.form['from_city']
     to_city = request.form['to_city']
     depart_date = request.form['depart_date']
     return_date = request.form['return_date']
@@ -18,7 +18,7 @@ def calculate_result():
     #chosen_currency = request.form['chosen_currency']
 
     print type(from_city), type(to_city), type(depart_date), type(return_date), type(num_days), type(travellers_num), type(budget)
-    #from_city = from_city.encode('ascii','ignore')
+    from_city = from_city.encode('ascii','ignore')
     print from_city, type(from_city)
     
     return 'from_city', from_city
