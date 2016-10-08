@@ -1,6 +1,19 @@
 import requests
 import json
 
+def generate_dates_list(total_initial_date, total_final_date, delta):
+   list_dates = []
+   initial_date = total_initial_date
+   final_date = initial_date + timedelta(days=delta)
+   list_dates.append((str(initial_date), str(final_date)))
+   
+   while final_date < total_final_date:
+       initial_date += timedelta(days = 1)
+       final_date = initial_date + timedelta(days=delta)
+       list_dates.append((str(initial_date), str(final_date)))
+       
+   return list_dates
+
 def ask_skyscanner(originplace,destinationplace,outbounddate,inbounddate,country='ES',currency='EUR',locale='spa',adults=1,groupPricing=False):
     info = {'apiKey': 'prtl6749387986743898559646983194', 'country': country, 'currency': currency, 'locale': locale,\
             'originplace': originplace, 'destinationplace': destinationplace, 'outbounddate': outbounddate,\
