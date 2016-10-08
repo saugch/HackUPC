@@ -83,7 +83,7 @@ def ask_me(originplace, destinationplacelist, inoutbounddatelist, budget, delta)
                 if price < (budget - lcosts):
                     ll         = [originplace,destinationplace,inbounddate,outbounddate]
                     hotelprice = ask_hotelscanner(destinationplace,inbounddate,outbounddate,budget-lcosts-price)
-                    if hlist != []:
+                    if hotelprice != []:
                         hlist.append(hotelprice)
                 if len(hlist) >= 3:
                     return hlist
