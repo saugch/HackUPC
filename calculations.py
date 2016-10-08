@@ -10,10 +10,11 @@ def ask_skyscanner(originplace,destinationplace,outbounddate,inbounddate,country
     ucode  = g.text
     ucode  = ucode.encode('ascii','ignore')
     
-    d = json.loads(ucode)
-    print('d')
-    print(d)
-    return d['Itineraries'][0]['PricingOptions'][0]['Price']
+    if ucode != '':
+        d = json.loads(ucode)
+        return d['Itineraries'][0]['PricingOptions'][0]['Price']
+    else:
+        return None
 
 def ask_hotelscanner(entityid,checkindate,checkoutdate,budget,guests=1,rooms=1,market='ES',currency='EUR',locale='spa'):
     headers = {'Accept': 'application/json'}
@@ -35,9 +36,7 @@ def ask_hotelscanner(entityid,checkindate,checkoutdate,budget,guests=1,rooms=1,m
     h  = []
     lh = 0
     
-    print(d)
     for i in xrange(len(d['hotels_prices'])):
-        print(i)
         price = d['hotels_prices'][i]['agent_prices'][0]['price_total']
         if price < budget:
             h.append((d['hotels'][i]['name'],price))
@@ -60,19 +59,34 @@ def life_costs(destinationplace,delta):
         return 100
 
 def ask_me(originplace, destinationplacelist, inoutbounddatelist, budget, delta):
+    """ Given an origin and a destination, along with the length of the stay and the dates between which you
+    would like to have it, it is able to return a combination of trip and hotel that fits the desired budget.
+    
+    Input
+    -----
+    originplace: str
+    destinationplacelist: list
+    inoutbounddatelist: list of tuples
+    delta: int
+    
+    Output
+    ------
+    A hotel list of tuples.
+    """
     hlist = []
     for destinationplace in destinationplacelist:
         for inoutbounddate in inoutbounddatelist:
             inbounddate, outbounddate = inoutbounddate
             price  = ask_skyscanner(originplace,destinationplace,inbounddate,outbounddate)
-            lcosts = life_costs(destinationplace, delta)
-            if price < (budget - lcosts):
-                ll         = [originplace,destinationplace,inbounddate,outbounddate]
-                hotelprice = ask_hotelscanner(destinationplace,inbounddate,outbounddate,budget-lcosts-price)
-                if hlist != []:
-                    hlist.append(hotelprice)
-            if len(hlist) >= 3:
-                return hlist
+            if price != None:
+                lcosts = life_costs(destinationplace, delta)
+                if price < (budget - lcosts):
+                    ll         = [originplace,destinationplace,inbounddate,outbounddate]
+                    hotelprice = ask_hotelscanner(destinationplace,inbounddate,outbounddate,budget-lcosts-price)
+                    if hlist != []:
+                        hlist.append(hotelprice)
+                if len(hlist) >= 3:
+                    return hlist
     return hlist
 
 #print(ask_hotelscanner('bcn','2016-10-20','2016-10-21',1000))
