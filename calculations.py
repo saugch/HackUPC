@@ -58,7 +58,7 @@ def life_costs(destinationplace,delta):
     else:
         return 100
 
-def ask_me(originplace, destinationplacelist, inoutbounddatelist, budget, delta):
+def ask_me(originplace, destinationplacelist, inoutbounddatelist, budget, delta,give_me_more=(0,0)):
     """ Given an origin and a destination, along with the length of the stay and the dates between which you
     would like to have it, it is able to return a combination of trip and hotel that fits the desired budget.
     
@@ -68,14 +68,17 @@ def ask_me(originplace, destinationplacelist, inoutbounddatelist, budget, delta)
     destinationplacelist: list
     inoutbounddatelist: list of tuples
     delta: int
+    give_me_more: tuple. It should be the one provided by the ask_me function.
     
     Output
     ------
-    A hotel list of tuples.
+    A hotel dictionary. You can acces to each date and to gmm (give_me_more variable).
     """
-    hlist = []
-    for destinationplace in destinationplacelist:
-        for inoutbounddate in inoutbounddatelist:
+    hlist = {}
+    a, b  = give_me_more
+    c, d  = a, b
+    for destinationplace in destinationplacelist[a:]:
+        for inoutbounddate in inoutbounddatelist[b:]:
             inbounddate, outbounddate = inoutbounddate
             price  = ask_skyscanner(originplace,destinationplace,inbounddate,outbounddate)
             if price != None:
@@ -84,10 +87,15 @@ def ask_me(originplace, destinationplacelist, inoutbounddatelist, budget, delta)
                     ll         = [originplace,destinationplace,inbounddate,outbounddate]
                     hotelprice = ask_hotelscanner(destinationplace,inbounddate,outbounddate,budget-lcosts-price)
                     if hotelprice != []:
-                        hlist.append(hotelprice)
+                        hlist[inbounddate] = hotelprice
                 if len(hlist) >= 3:
+                    hlist['gmm'] = (c, d)
                     return hlist
+            d += 1
+        b  = 0
+        c += 1
+    hlist['gmm'] = (c, d)
     return hlist
 
 #print(ask_hotelscanner('bcn','2016-10-20','2016-10-21',1000))
-print(ask_me('bcn-sky', ['stn-sky','edi-sky','mad-sky'], llistadates, 1000, 4))
+print(ask_me('bcn-sky', ['stn-sky','edi-sky','mad-sky'], llistadates, 1000, 4, (0,0)))
