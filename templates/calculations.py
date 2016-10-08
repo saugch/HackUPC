@@ -126,3 +126,12 @@ def generate_dates_list(total_initial_date, total_final_date, delta):
       list_dates.append((str(initial_date), str(final_date)))
       
   return list_dates
+
+def disp_coin(c):
+    if c == 1:
+        return 'EUR'
+    elif c==2:
+        return 'GBP'
+    else:
+        return 'USD'
+    
