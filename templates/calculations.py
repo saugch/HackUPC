@@ -12,9 +12,14 @@ def ask_skyscanner(originplace,destinationplace,outbounddate,inbounddate,country
     
     if ucode != '':
         d = json.loads(ucode)
-        return d['Itineraries'][0]['PricingOptions'][0]['Price']
-    else:
-        return None
+        v = 0
+        while v < 10:
+            try:
+                return d['Itineraries'][0]['PricingOptions'][0]['Price']
+            except:
+                pass
+            v += 1
+        assert True, "Connection Error"
 
 def ask_hotelscanner(entityid,checkindate,checkoutdate,budget,total_price,guests=1,rooms=1,market='ES',currency='EUR',locale='spa'):
     headers = {'Accept': 'application/json'}
@@ -28,11 +33,17 @@ def ask_hotelscanner(entityid,checkindate,checkoutdate,budget,total_price,guests
         
     d = requests.get('http://partners.api.skyscanner.net/apiservices/hotels/liveprices/v2/'+market+'/'+currency+'/'+locale+'/'+entityid+'/'+checkindate+'/'+checkoutdate+'/'+str(guests)+'/'+str(rooms)+'?apiKey=prtl6749387986743898559646983194', headers = headers)
     g = requests.get('http://partners.api.skyscanner.net'+d.headers['Location']+'&sortColumn=rating&sortOrder=desc')
-    
-    ucode  = g.text
-    ucode  = ucode.encode('ascii','ignore')
 
-    d  = json.loads(ucode)
+    while v < 10:
+        try:
+            g = requests.get('http://partners.api.skyscanner.net'+d.headers['Location']+'&sortColumn=rating&sortOrder=desc')
+            ucode  = g.text
+            ucode  = ucode.encode('ascii','ignore')
+            d      = json.loads(ucode)
+        except:
+            pass
+        v += 1    
+
     h  = []
     lh = 0
     
@@ -44,7 +55,7 @@ def ask_hotelscanner(entityid,checkindate,checkoutdate,budget,total_price,guests
             return h
     return h
 
-def life_costs(destinationplace,delta):
+def life_costs(destinationplace,delta,travellers):
     d = {"Bermuda":61.5, "Switzerland":55.1,"Bahamas":46.62, "Norway":45.72,\
     "Iceland":43.71,"Japan":40.8, "Singapore":38.2, "Denmark":37,"New Zealand":35.8,\
     "Luxembourg":35.72,"Kuwait":35.1,"Australia":35, "Ireland":34.5,"Hong Kong":34.3,\
@@ -53,14 +64,17 @@ def life_costs(destinationplace,delta):
     "Austria":31.5,"Italy":30.5,"Canada":30.3,"Qatar":29.8,"Germany":29.3,"United Arab Emirates":28.8, "Spain":25,\
     "Taiwan":25.2,"Greece":24.4, "Argentina":24.2,"Portugal":21.8,"Brazil":21.5,"China":20,"Mexico":14.5,"India":10.5}
        
-    if False:
-        return d[destinationplace]*delta
-    else:
-        return 100
+    return 30*delta*travellers
 
-def ask_me(originplace, destinationplacelist, destinationcountryplacelist, inoutbounddatelist, budget, delta,travellers='1',currency='EUR',give_me_more=(0,0)):
+def redefine_dictionary(d):
+    for i in xrange(len(d.keys())-1):
+        d['o'+str(i)][2]=sorted(d['o'+str(i)][2], key=lambda x: x[1])
+    return d
+
+def ask_me(originplace, destinationplacelist, destinationcountryplacelist, inoutbounddatelist, budget, delta, friendhome=False, travellers='1',currency='EUR',give_me_more=(0,0)):
     """ Given an origin and a destination, along with the length of the stay and the dates between which you
     would like to have it, it is able to return a combination of trip and hotel that fits the desired budget.
+    It is functional, but not optimizated.
     
     Input
     -----
@@ -109,17 +123,27 @@ def ask_me(originplace, destinationplacelist, destinationcountryplacelist, inout
     a, b  = give_me_more
     c, d  = a, b
     i     = 0
+    n     = 0
     for destinationplace in destinationplacelist[a:]:
         for inoutbounddate in inoutbounddatelist[b:]:
             inbounddate, outbounddate = inoutbounddate
             price  = ask_skyscanner(originplace,destinationplace,inbounddate,outbounddate,adults=travellers,currency=currency)
             if price != None:
-                lcosts = life_costs(destinationplace, delta)
+                lcosts = life_costs(destinationcountryplacelist[0], delta, travellers) #falta arreglar-ho
+                print(lcosts)
+                n     += 1
                 if price < (budget - lcosts):
                     ll         = [originplace,destinationplace,inbounddate,outbounddate]
-                    hotelprice = ask_hotelscanner(destinationplace,inbounddate,outbounddate,budget-lcosts-price,lcosts+price,guests=travellers,currency=currency)
+                    if friendshome:
+                        hotelprice = ['Friendshome',0]
+                    else:
+                        hotelprice = ask_hotelscanner(destinationplace,inbounddate,outbounddate,budget-lcosts-price,lcosts+price,guests=travellers,currency=currency)
                     if hotelprice != []:
-                        hlist['o'+str(i)] = [destinationplace,inbounddate,hotelprice]
+                        e  = requests.get('http://partners.api.skyscanner.net/apiservices/autosuggest/v1.0/ES/GBP/en-GB/?id='+destinationplace+'&apiKey=prtl6749387986743898559646983194')
+                        ucode = e.text
+                        ucode = ucode.encode('ascii','ignore')      
+                        e     = json.loads(ucode)
+                        hlist['o'+str(i)] = [e['Places'][0]['PlaceName'],inbounddate,hotelprice]
                         i += 1
                 if len(hlist) >= 3:
                     hlist['gmm'] = (c, d)
@@ -127,14 +151,9 @@ def ask_me(originplace, destinationplacelist, destinationcountryplacelist, inout
             d += 1
         b  = 0
         c += 1
+        
     hlist['gmm'] = (c, d)
-    hlist = redefine_dictionary(hlist)
     return hlist
-
-def redefine_dictionary(d):
-    for i in xrange(len(d.keys())-1):
-        d['o'+str(i)][2]=sorted(d['o'+str(i)][2], key=lambda x: x[1])
-    return d
         
 
 #print(ask_hotelscanner('bcn','2016-10-20','2016-10-21',1000))
