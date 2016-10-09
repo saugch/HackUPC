@@ -37,16 +37,20 @@ def show_more_options():
         ciutat1 = d['o1'][0]
         dates1 = d['o1'][1]
         hotel10 = d['o1'][2][0][0]
-        hotel11 = d['o1'][2][1][0]
-        hotel12 = d['o1'][2][2][0]
+        if len(d['o1'][2]) > 1:
+            hotel11 = d['o1'][2][1][0]
+        if len(d['o1'][2]) > 2:
+            hotel12 = d['o1'][2][2][0]
         preu_min1 =  round(d['o1'][2][0][1],2)
 
         if len(d)>3:
             ciutat2 = d['o2'][0]
             dates2 = d['o2'][1]
             hotel20 = d['o2'][2][0][0]
-            hotel21 = d['o2'][2][1][0]
-            hotel22 = d['o2'][2][2][0]
+            if len(d['o2'][2]) > 1:
+                hotel21 = d['o2'][2][1][0]
+            if len(d['o0'][2]) > 2:
+                hotel22 = d['o2'][2][2][0]
             preu_min2 =  round(d['o2'][2][0][1],2)
 
             return render_template('result.html', ciutat0=ciutat0 , dates0=dates0, hotel00=hotel00, hotel01=hotel01, hotel02=hotel02 , preu0=preu_min0,ciutat1=ciutat1 , dates1=dates1, hotel10=hotel10, hotel11=hotel11, hotel12= hotel12 , preu1=preu_min1,ciutat2=ciutat2 , dates2=dates2, hotel20=hotel20, hotel21=hotel21, hotel22=hotel22 , preu2=preu_min2, moneda = coin)
@@ -81,16 +85,20 @@ def next_options():
         ciutat1 = d['o1'][0]
         dates1 = d['o1'][1]
         hotel10 = d['o1'][2][0][0]
-        hotel11 = d['o1'][2][1][0]
-        hotel12 = d['o1'][2][2][0]
+        if len(d['o1'][2]) > 1:
+            hotel11 = d['o1'][2][1][0]
+        if len(d['o1'][2]) > 2:
+            hotel12 = d['o1'][2][2][0]
         preu_min1 =  round(d['o1'][2][0][1],2)
 
         if len(d)>3:
             ciutat2 = d['o2'][0]
             dates2 = d['o2'][1]
             hotel20 = d['o2'][2][0][0]
-            hotel21 = d['o2'][2][1][0]
-            hotel22 = d['o2'][2][2][0]
+            if len(d['o2'][2]) > 1:
+                hotel21 = d['o2'][2][1][0]
+            if len(d['o0'][2]) > 2:
+                hotel22 = d['o2'][2][2][0]
             preu_min2 =  round(d['o2'][2][0][1],2)
 
             return render_template('result.html', ciutat0=ciutat0 , dates0=dates0, hotel00=hotel00, hotel01=hotel01, hotel02=hotel02 , preu0=preu_min0,ciutat1=ciutat1 , dates1=dates1, hotel10=hotel10, hotel11=hotel11, hotel12= hotel12 , preu1=preu_min1,ciutat2=ciutat2 , dates2=dates2, hotel20=hotel20, hotel21=hotel21, hotel22=hotel22 , preu2=preu_min2, moneda = coin)
@@ -135,24 +143,30 @@ def calculate_result():
     ciutat0 = d['o0'][0]
     dates0 = d['o0'][1]
     hotel00 = d['o0'][2][0][0]
-    hotel01 = d['o0'][2][1][0]
-    hotel02 = d['o0'][2][2][0]
+    if len(d['o0'][2]) > 1:
+        hotel01 = d['o0'][2][1][0]
+    if len(d['o0'][2]) > 2:
+        hotel02 = d['o0'][2][2][0]
     preu_min0 = round(d['o0'][2][0][1],2)
 
     if len(d)>2:
         ciutat1 = d['o1'][0]
         dates1 = d['o1'][1]
         hotel10 = d['o1'][2][0][0]
-        hotel11 = d['o1'][2][1][0]
-        hotel12 = d['o1'][2][2][0]
+        if len(d['o1'][2]) > 1:
+            hotel11 = d['o1'][2][1][0]
+        if len(d['o1'][2]) > 2:
+            hotel12 = d['o1'][2][2][0]
         preu_min1 =  round(d['o1'][2][0][1],2)
 
         if len(d)>3:
             ciutat2 = d['o2'][0]
             dates2 = d['o2'][1]
             hotel20 = d['o2'][2][0][0]
-            hotel21 = d['o2'][2][1][0]
-            hotel22 = d['o2'][2][2][0]
+            if len(d['o2'][2]) > 1:
+                hotel21 = d['o2'][2][1][0]
+            if len(d['o0'][2]) > 2:
+                hotel22 = d['o2'][2][2][0]
             preu_min2 =  round(d['o2'][2][0][1],2)
 
             return render_template('result.html', ciutat0=ciutat0 , dates0=dates0, hotel00=hotel00, hotel01=hotel01, hotel02=hotel02 , preu0=preu_min0,ciutat1=ciutat1 , dates1=dates1, hotel10=hotel10, hotel11=hotel11, hotel12= hotel12 , preu1=preu_min1,ciutat2=ciutat2 , dates2=dates2, hotel20=hotel20, hotel21=hotel21, hotel22=hotel22 , preu2=preu_min2, moneda = coin)
