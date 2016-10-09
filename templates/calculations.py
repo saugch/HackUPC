@@ -12,14 +12,7 @@ def ask_skyscanner(originplace,destinationplace,outbounddate,inbounddate,country
     
     if ucode != '':
         d = json.loads(ucode)
-        v = 0
-        while v < 10:
-            try:
-                return d['Itineraries'][0]['PricingOptions'][0]['Price']
-            except:
-                pass
-            v += 1
-        assert True, "Connection Error"
+        return d['Itineraries'][0]['PricingOptions'][0]['Price']
 
 def ask_hotelscanner(entityid,checkindate,checkoutdate,budget,total_price,guests=1,rooms=1,market='ES',currency='EUR',locale='spa'):
     headers = {'Accept': 'application/json'}
@@ -32,7 +25,6 @@ def ask_hotelscanner(entityid,checkindate,checkoutdate,budget,total_price,guests
     entityid = a['results'][0]['individual_id']
         
     d = requests.get('http://partners.api.skyscanner.net/apiservices/hotels/liveprices/v2/'+market+'/'+currency+'/'+locale+'/'+entityid+'/'+checkindate+'/'+checkoutdate+'/'+str(guests)+'/'+str(rooms)+'?apiKey=prtl6749387986743898559646983194', headers = headers)
-    g = requests.get('http://partners.api.skyscanner.net'+d.headers['Location']+'&sortColumn=rating&sortOrder=desc')
 
     while v < 10:
         try:
